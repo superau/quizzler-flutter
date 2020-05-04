@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 QuizBrain quizBrain = QuizBrain();
 
@@ -28,6 +29,33 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
+  void checkAnswer(userAnswer) {
+    setState(() {
+      if (quizBrain.isFinished()) {
+        Alert(
+          context: context,
+          title: 'Finished!',
+          desc: 'You\'ve reached the end of the quiz.',
+        ).show();
+
+        quizBrain.reset();
+        scoreKeeper.clear();
+        return;
+      }
+
+      if (userAnswer == quizBrain.getQuestionAnswer()) {
+        scoreKeeper.add(Icon(
+          Icons.check,
+          color: Colors.green,
+        ));
+      } else {
+        scoreKeeper.add(Icon(
+          Icons.close,
+          color: Colors.red,
+        ));
+      }
+    });
+  }
 
   List<Icon> scoreKeeper = [];
 
@@ -67,14 +95,10 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
+                checkAnswer(true); //The user picked true.
                 setState(() {
                   quizBrain.nextQuestion();
-                  scoreKeeper.add(Icon(
-                    Icons.check,
-                    color: Colors.green,
-                  ));
                 });
-                //The user picked true.
               },
             ),
           ),
@@ -92,14 +116,11 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                //The user picked false.
+                checkAnswer(false);
                 setState(() {
                   quizBrain.nextQuestion();
-                  scoreKeeper.add(Icon(
-                    Icons.close,
-                    color: Colors.red,
-                  ));
                 });
+                //The user picked false.
               },
             ),
           ),
